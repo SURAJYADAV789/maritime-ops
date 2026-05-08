@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres:15-alpine
+    container_name: maritime_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: maritime_db
+      POSTGRES_USER: maritime_user
+      POSTGRES_PASSWORD: maritime_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: maritime_web
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
