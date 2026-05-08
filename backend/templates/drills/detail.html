@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}{{ drill.title }} | MarineOPS{% endblock %}
+{% block nav_drills %}active{% endblock %}
+{% block page_title %}{{ drill.title }}{% endblock %}
+{% block page_sub %}{{ drill.ship.name }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="/drills/" class="btn btn-outline btn-sm">← Back</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+
+  <!-- Drill Info -->
+  <div>
+    <div class="card">
+      <div class="card-title">Drill Details</div>
+      <table>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;width:130px;">Type</td>
+          <td>{{ drill.get_drill_type_display }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Ship</td>
+          <td><strong>{{ drill.ship.name }}</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Scheduled</td>
+          <td>{{ drill.scheduled_date|date:"Y-m-d H:i" }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Duration</td>
+          <td>{{ drill.duration_minutes }} minutes</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Status</td>
+          <td>
+            {% if drill.status == 'completed' %}
+            <span class="badge badge-success">✅ Completed</span>
+            {% elif drill.status == 'missed' %}
+            <span class="badge badge-danger">❌ Missed</span>
+            {% elif drill.status == 'cancelled' %}
+            <span class="badge badge-gray">🚫 Cancelled</span>
+            {% else %}
+            <span class="badge badge-warning">📅 Scheduled</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% if drill.description %}
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Description</td>
+          <td>{{ drill.description }}</td>
+        </tr>
+        {% endif %}
+      </table>
+    </div>
+
+    <!-- Admin Actions -->
+    {% if user.is_admin and drill.status == 'scheduled' %}
+    <div class="card">
+      <div class="card-title">Admin Actions</div>
+      <div style="display:flex;gap:10px;">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="complete_drill">
+          <button type="submit" class="btn btn-success">✅ Mark Completed</button>
+        </form>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="cancel_drill">
+          <button type="submit" class="btn btn-danger">🚫 Cancel</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Crew Actions -->
+    {% if user.is_crew and user_attendance %}
+    <div class="card">
+      <div class="card-title">My Attendance</div>
+      {% if user_attendance.attended %}
+      <span class="badge badge-success">✅ You attended this drill</span>
+      {% else %}
+      <form method="post" style="margin-bottom:10px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="mark_attended">
+        <button type="submit" class="btn btn-primary">✅ Mark Attended</button>
+      </form>
+      {% endif %}
+
+      {% if not user_attendance.completion_submitted %}
+      <form method="post" style="margin-top:10px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="submit_completion">
+        <div class="form-group">
+          <textarea name="notes" class="form-control" rows="2"
+                    placeholder="Add notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline">📋 Submit Completion</button>
+      </form>
+      {% else %}
+      <span class="badge badge-success" style="margin-top:8px;display:block;">
+        ✅ Completion submitted
+      </span>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Attendance -->
+  <div>
+    <div class="card">
+      <div class="card-title">
+        Crew Attendance
+        <span class="badge badge-info" style="margin-left:8px;">
+          {{ attendances.count }} crew
+        </span>
+      </div>
+
+      {% if attendances %}
+      <table>
+        <thead>
+          <tr>
+            <th>Crew Member</th>
+            <th>Attended</th>
+            <th>Submitted</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for att in attendances %}
+          <tr>
+            <td>{{ att.crew_member.get_full_name|default:att.crew_member.username }}</td>
+            <td>
+              {% if att.attended %}
+              <span class="badge badge-success">✅ Yes</span>
+              {% else %}
+              <span class="badge badge-danger">❌ No</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if att.completion_submitted %}
+              <span class="badge badge-success">✅ Yes</span>
+              {% else %}
+              <span class="badge badge-gray">Pending</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">
+        <div class="empty-icon">👥</div>
+        <p>No attendance records yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

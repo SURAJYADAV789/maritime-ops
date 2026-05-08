@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Safety Drills | MarineOPS{% endblock %}
+{% block nav_drills %}active{% endblock %}
+{% block page_title %}Safety Drills{% endblock %}
+{% block page_sub %}Schedule and track all safety drills{% endblock %}
+
+{% block topbar_actions %}
+{% if user.is_admin %}
+<a href="/drills/create/" class="btn btn-primary btn-sm">+ Schedule Drill</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Filters -->
+<form method="get" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+  <select name="ship" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="">All Ships</option>
+    {% for ship in ships %}
+    <option value="{{ ship.id }}" {% if selected_ship == ship.id|stringformat:"s" %}selected{% endif %}>
+      {{ ship.name }}
+    </option>
+    {% endfor %}
+  </select>
+
+  <select name="status" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="">All Statuses</option>
+    {% for val, label in statuses %}
+    <option value="{{ val }}" {% if selected_status == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="drill_type" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="">All Types</option>
+    {% for val, label in drill_types %}
+    <option value="{{ val }}" {% if selected_type == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  {% if selected_ship or selected_status or selected_type %}
+  <a href="/drills/" class="btn btn-outline btn-sm">Clear</a>
+  {% endif %}
+</form>
+
+<!-- Table -->
+<div class="card">
+  {% if drills %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Drill</th>
+          <th>Type</th>
+          <th>Ship</th>
+          <th>Scheduled Date</th>
+          <th>Duration</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for drill in drills %}
+        <tr>
+          <td><strong>{{ drill.title }}</strong></td>
+          <td>{{ drill.get_drill_type_display }}</td>
+          <td>{{ drill.ship.name }}</td>
+          <td>{{ drill.scheduled_date|date:"Y-m-d H:i" }}</td>
+          <td>{{ drill.duration_minutes }} min</td>
+          <td>
+            {% if drill.status == 'completed' %}
+            <span class="badge badge-success">✅ Completed</span>
+            {% elif drill.status == 'missed' %}
+            <span class="badge badge-danger">❌ Missed</span>
+            {% elif drill.status == 'in_progress' %}
+            <span class="badge badge-info">🔄 In Progress</span>
+            {% elif drill.status == 'cancelled' %}
+            <span class="badge badge-gray">🚫 Cancelled</span>
+            {% else %}
+            <span class="badge badge-warning">📅 Scheduled</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="/drills/{{ drill.id }}/" class="btn btn-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">🚨</div>
+    <p>No drills found.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

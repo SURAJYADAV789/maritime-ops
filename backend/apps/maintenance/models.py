@@ -38,7 +38,7 @@ class MaintenanceTask(models.Model):
     
     @property
     def is_overdue(self):
-        if self.status == self.status.COMPLETED:
+        if self.status == 'completed':
             return False
         return self.due_date < timezone.now().date()
     

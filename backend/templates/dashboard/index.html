@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | MarineOPS{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block page_title %}Compliance Dashboard{% endblock %}
+{% block page_sub %}Fleet-wide operations overview{% endblock %}
+
+{% block topbar_actions %}
+{% if user.is_admin %}
+<a href="/maintenance/create/" class="btn btn-primary btn-sm">+ Add Task</a>
+<a href="/drills/create/" class="btn btn-outline btn-sm">+ Schedule Drill</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card blue">
+    <div class="stat-icon">🚢</div>
+    <div class="stat-value">{{ total_ships }}</div>
+    <div class="stat-label">Total Ships</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-icon">✅</div>
+    <div class="stat-value">{{ completed_tasks }}</div>
+    <div class="stat-label">Completed Tasks</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-icon">⚠️</div>
+    <div class="stat-value">{{ overdue_tasks }}</div>
+    <div class="stat-label">Overdue Tasks</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="stat-icon">🚨</div>
+    <div class="stat-value">{{ missed_drills }}</div>
+    <div class="stat-label">Missed Drills</div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Maintenance Overview</div>
+    <canvas id="maintenanceChart" height="200"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Drill Overview</div>
+    <canvas id="drillChart" height="200"></canvas>
+  </div>
+</div>
+
+<!-- Ship Compliance Table -->
+<div class="card">
+  <div class="card-title">🚢 Ship Compliance Status</div>
+  {% if ships %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ship</th>
+          <th>Status</th>
+          <th>Total Tasks</th>
+          <th>Completed</th>
+          <th>Overdue</th>
+          <th>Total Drills</th>
+          <th>Missed</th>
+          <th>Risk</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ship in ships %}
+        <tr>
+          <td><strong>{{ ship.name }}</strong></td>
+          <td>
+            {% if ship.status == 'active' %}
+            <span class="badge badge-success">Active</span>
+            {% elif ship.status == 'docked' %}
+            <span class="badge badge-info">Docked</span>
+            {% else %}
+            <span class="badge badge-gray">{{ ship.status }}</span>
+            {% endif %}
+          </td>
+          <td>{{ ship.total_tasks }}</td>
+          <td>{{ ship.completed_tasks }}</td>
+          <td>
+            {% if ship.overdue_tasks > 0 %}
+            <span class="badge badge-danger">{{ ship.overdue_tasks }}</span>
+            {% else %}
+            <span class="badge badge-success">0</span>
+            {% endif %}
+          </td>
+          <td>{{ ship.total_drills }}</td>
+          <td>
+            {% if ship.missed_drills > 0 %}
+            <span class="badge badge-danger">{{ ship.missed_drills }}</span>
+            {% else %}
+            <span class="badge badge-success">0</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if ship.risk == 'high' %}
+            <span class="badge badge-danger">🔴 High</span>
+            {% elif ship.risk == 'medium' %}
+            <span class="badge badge-warning">🟡 Medium</span>
+            {% else %}
+            <span class="badge badge-success">🟢 Low</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="/ships/{{ ship.id }}/" class="btn btn-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">🚢</div>
+    <p>No ships registered yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Maintenance Chart
+  new Chart(document.getElementById('maintenanceChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Completed', 'Overdue', 'Pending'],
+      datasets: [{
+        data: [{{ completed_tasks }}, {{ overdue_tasks }}, {{ pending_tasks }}],
+        backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      cutout: '65%'
+    }
+  });
+
+  // Drill Chart
+  new Chart(document.getElementById('drillChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Completed', 'Missed', 'Upcoming'],
+      datasets: [{
+        data: [{{ completed_drills }}, {{ missed_drills }}, {{ upcoming_drills }}],
+        backgroundColor: ['#22c55e', '#ef4444', '#3b82f6'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      cutout: '65%'
+    }
+  });
+</script>
+{% endblock %}

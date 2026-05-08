@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block title %}{{ ship.name }} | MarineOPS{% endblock %}
+{% block nav_ships %}active{% endblock %}
+{% block page_title %}{{ ship.name }}{% endblock %}
+{% block page_sub %}{{ ship.vessel_type }} · {{ ship.flag }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="/ships/" class="btn btn-outline btn-sm">← Back</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Stats -->
+<div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+  <div class="stat-card blue">
+    <div class="stat-icon">📊</div>
+    <div class="stat-value">{{ overall_score }}%</div>
+    <div class="stat-label">Compliance Score</div>
+  </div>
+  <div class="stat-card {% if overdue_tasks > 0 %}red{% else %}green{% endif %}">
+    <div class="stat-icon">🔧</div>
+    <div class="stat-value">{{ overdue_tasks }}</div>
+    <div class="stat-label">Overdue Tasks</div>
+  </div>
+  <div class="stat-card {% if missed_drills > 0 %}red{% else %}green{% endif %}">
+    <div class="stat-icon">🚨</div>
+    <div class="stat-value">{{ missed_drills }}</div>
+    <div class="stat-label">Missed Drills</div>
+  </div>
+</div>
+
+<div class="grid-2">
+
+  <!-- Ship Info -->
+  <div>
+    <div class="card">
+      <div class="card-title">Ship Information</div>
+      <table>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;width:140px;">IMO Number</td>
+          <td><strong>{{ ship.imo_number }}</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Vessel Type</td>
+          <td>{{ ship.vessel_type }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Flag</td>
+          <td>{{ ship.flag }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Port of Registry</td>
+          <td>{{ ship.port_of_registry }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Year Built</td>
+          <td>{{ ship.year_built|default:"—" }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Status</td>
+          <td>
+            {% if ship.status == 'active' %}
+            <span class="badge badge-success">Active</span>
+            {% elif ship.status == 'docked' %}
+            <span class="badge badge-info">Docked</span>
+            {% else %}
+            <span class="badge badge-gray">{{ ship.status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Risk Level</td>
+          <td>
+            {% if risk == 'high' %}
+            <span class="badge badge-danger">🔴 High</span>
+            {% elif risk == 'medium' %}
+            <span class="badge badge-warning">🟡 Medium</span>
+            {% else %}
+            <span class="badge badge-success">🟢 Low</span>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Crew -->
+    <div class="card">
+      <div class="card-title">Crew Members
+        <span class="badge badge-info" style="margin-left:8px;">{{ crew.count }}</span>
+      </div>
+      {% if crew %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Employee ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for member in crew %}
+          <tr>
+            <td>{{ member.get_full_name|default:member.username }}</td>
+            <td><span class="badge badge-gray">{{ member.role }}</span></td>
+            <td>{{ member.employee_id|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color:#64748b;font-size:14px;">No crew assigned.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Tasks & Drills -->
+  <div>
+    <div class="card">
+      <div class="card-title">
+        Recent Tasks
+        <a href="/maintenance/?ship={{ ship.id }}"
+           style="font-size:13px;color:#1e5799;font-weight:400;margin-left:8px;">
+          View all →
+        </a>
+      </div>
+      {% if tasks %}
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Status</th>
+            <th>Due</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+          <tr>
+            <td>{{ task.title|truncatechars:30 }}</td>
+            <td>
+              {% if task.status == 'completed' %}
+              <span class="badge badge-success">Done</span>
+              {% elif task.status == 'overdue' %}
+              <span class="badge badge-danger">Overdue</span>
+              {% elif task.status == 'in_progress' %}
+              <span class="badge badge-info">In Progress</span>
+              {% else %}
+              <span class="badge badge-gray">Pending</span>
+              {% endif %}
+            </td>
+            <td style="font-size:13px;">{{ task.due_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color:#64748b;font-size:14px;">No tasks yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        Recent Drills
+        <a href="/drills/?ship={{ ship.id }}"
+           style="font-size:13px;color:#1e5799;font-weight:400;margin-left:8px;">
+          View all →
+        </a>
+      </div>
+      {% if drills %}
+      <table>
+        <thead>
+          <tr>
+            <th>Drill</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for drill in drills %}
+          <tr>
+            <td>{{ drill.title|truncatechars:30 }}</td>
+            <td>
+              {% if drill.status == 'completed' %}
+              <span class="badge badge-success">Done</span>
+              {% elif drill.status == 'missed' %}
+              <span class="badge badge-danger">Missed</span>
+              {% elif drill.status == 'scheduled' %}
+              <span class="badge badge-warning">Scheduled</span>
+              {% else %}
+              <span class="badge badge-gray">{{ drill.status }}</span>
+              {% endif %}
+            </td>
+            <td style="font-size:13px;">{{ drill.scheduled_date|date:"Y-m-d" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color:#64748b;font-size:14px;">No drills yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

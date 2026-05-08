@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Register Ship | MarineOPS{% endblock %}
+{% block nav_ships %}active{% endblock %}
+{% block page_title %}Register New Ship{% endblock %}
+{% block page_sub %}Add a new vessel to the fleet{% endblock %}
+
+{% block topbar_actions %}
+<a href="/ships/" class="btn btn-outline btn-sm">← Cancel</a>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:600px;">
+  <div class="card">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ship Name *</label>
+          <input type="text" name="name" class="form-control"
+                 placeholder="e.g. MV Pacific Voyager" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">IMO Number *</label>
+          <input type="text" name="imo_number" class="form-control"
+                 placeholder="e.g. IMO9234567" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vessel Type *</label>
+          <input type="text" name="vessel_type" class="form-control"
+                 placeholder="e.g. Container Ship" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Flag *</label>
+          <input type="text" name="flag" class="form-control"
+                 placeholder="e.g. Panama" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Port of Registry *</label>
+          <input type="text" name="port_of_registry" class="form-control"
+                 placeholder="e.g. Panama City" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Year Built</label>
+          <input type="number" name="year_built" class="form-control"
+                 placeholder="e.g. 2015" min="1900" max="2026">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">🚢 Register Ship</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

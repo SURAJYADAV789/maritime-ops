@@ -19,21 +19,12 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    # Root redirect to dashboard
     path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
-
-    # Admin
     path('admin/', admin.site.urls),
-
-    # Auth pages
     path('auth/', include('apps.users.urls')),
-
-    # HTML pages
     path('dashboard/', include('apps.compliance.urls')),
     path('maintenance/', include('apps.maintenance.urls')),
     path('drills/', include('apps.drills.urls')),
     path('ships/', include('apps.ships.urls')),
-
-    # ALL API
     path('api/v1/', include('apps.api.urls')),
 ]

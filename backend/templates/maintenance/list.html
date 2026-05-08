@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Maintenance | MarineOPS{% endblock %}
+{% block nav_maintenance %}active{% endblock %}
+{% block page_title %}Maintenance Tasks{% endblock %}
+{% block page_sub %}Track and manage all maintenance activities{% endblock %}
+
+{% block topbar_actions %}
+{% if user.is_admin %}
+<a href="/maintenance/create/" class="btn btn-primary btn-sm">+ New Task</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Filters -->
+<form method="get" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+  <select name="ship" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="">All Ships</option>
+    {% for ship in ships %}
+    <option value="{{ ship.id }}" {% if selected_ship == ship.id|stringformat:"s" %}selected{% endif %}>
+      {{ ship.name }}
+    </option>
+    {% endfor %}
+  </select>
+
+  <select name="status" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="">All Statuses</option>
+    {% for val, label in statuses %}
+    <option value="{{ val }}" {% if selected_status == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="priority" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="">All Priorities</option>
+    {% for val, label in priorities %}
+    <option value="{{ val }}" {% if selected_priority == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  {% if selected_ship or selected_status or selected_priority %}
+  <a href="/maintenance/" class="btn btn-outline btn-sm">Clear</a>
+  {% endif %}
+</form>
+
+<!-- Table -->
+<div class="card">
+  {% if tasks %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Ship</th>
+          <th>Assigned To</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>
+            <strong>{{ task.title }}</strong>
+            <div style="font-size:12px;color:#64748b;">{{ task.description|truncatechars:50 }}</div>
+          </td>
+          <td>{{ task.ship.name }}</td>
+          <td>{{ task.assigned_to.get_full_name|default:"Unassigned" }}</td>
+          <td>
+            {% if task.priority == 'critical' %}
+            <span class="badge badge-danger">Critical</span>
+            {% elif task.priority == 'high' %}
+            <span class="badge badge-warning">High</span>
+            {% elif task.priority == 'medium' %}
+            <span class="badge badge-info">Medium</span>
+            {% else %}
+            <span class="badge badge-gray">Low</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if task.is_overdue %}
+            <span style="color:#ef4444;font-weight:600;">⚠️ {{ task.due_date }}</span>
+            {% else %}
+            {{ task.due_date }}
+            {% endif %}
+          </td>
+          <td>
+            {% if task.status == 'completed' %}
+            <span class="badge badge-success">✅ Completed</span>
+            {% elif task.status == 'overdue' %}
+            <span class="badge badge-danger">⚠️ Overdue</span>
+            {% elif task.status == 'in_progress' %}
+            <span class="badge badge-info">🔄 In Progress</span>
+            {% else %}
+            <span class="badge badge-gray">⏳ Pending</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="/maintenance/{{ task.id }}/" class="btn btn-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">🔧</div>
+    <p>No tasks found.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

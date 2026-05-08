@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Fleet | MarineOPS{% endblock %}
+{% block nav_ships %}active{% endblock %}
+{% block page_title %}Fleet Management{% endblock %}
+{% block page_sub %}All registered vessels{% endblock %}
+
+{% block topbar_actions %}
+{% if user.is_admin %}
+<a href="/ships/create/" class="btn btn-primary btn-sm">+ Register Ship</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  {% if ships %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ship Name</th>
+          <th>IMO Number</th>
+          <th>Type</th>
+          <th>Flag</th>
+          <th>Port of Registry</th>
+          <th>Year Built</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ship in ships %}
+        <tr>
+          <td><strong>{{ ship.name }}</strong></td>
+          <td>{{ ship.imo_number }}</td>
+          <td>{{ ship.vessel_type }}</td>
+          <td>{{ ship.flag }}</td>
+          <td>{{ ship.port_of_registry }}</td>
+          <td>{{ ship.year_built|default:"—" }}</td>
+          <td>
+            {% if ship.status == 'active' %}
+            <span class="badge badge-success">Active</span>
+            {% elif ship.status == 'docked' %}
+            <span class="badge badge-info">Docked</span>
+            {% elif ship.status == 'maintenance' %}
+            <span class="badge badge-warning">Maintenance</span>
+            {% else %}
+            <span class="badge badge-gray">{{ ship.status }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="/ships/{{ ship.id }}/" class="btn btn-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">🚢</div>
+    <p>No ships registered yet.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
