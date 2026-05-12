@@ -5,7 +5,7 @@
 {% block page_sub %}{{ drill.ship.name }}{% endblock %}
 
 {% block topbar_actions %}
-<a href="/drills/" class="btn btn-outline btn-sm">← Back</a>
+<a href="{% url 'drills:drill-list' %}" class="btn btn-outline btn-sm">← Back</a>
 {% endblock %}
 
 {% block content %}

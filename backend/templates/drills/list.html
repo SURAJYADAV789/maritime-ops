@@ -6,7 +6,7 @@
 
 {% block topbar_actions %}
 {% if user.is_admin %}
-<a href="/drills/create/" class="btn btn-primary btn-sm">+ Schedule Drill</a>
+<a href="{% url 'drills:drill-create' %}" class="btn btn-primary btn-sm">+ Schedule Drill</a>
 {% endif %}
 {% endblock %}
 
@@ -38,7 +38,7 @@
   </select>
 
   {% if selected_ship or selected_status or selected_type %}
-  <a href="/drills/" class="btn btn-outline btn-sm">Clear</a>
+  <a href="{% url 'drills:drill-list' %}" class="btn btn-outline btn-sm">Clear</a>
   {% endif %}
 </form>
 
@@ -80,7 +80,7 @@
             {% endif %}
           </td>
           <td>
-            <a href="/drills/{{ drill.id }}/" class="btn btn-outline btn-sm">View</a>
+            <a href="{% url 'drills:drill-detail' drill.id %}" class="btn btn-outline btn-sm">View</a>
           </td>
         </tr>
         {% endfor %}

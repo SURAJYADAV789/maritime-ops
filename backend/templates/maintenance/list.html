@@ -6,7 +6,7 @@
 
 {% block topbar_actions %}
 {% if user.is_admin %}
-<a href="/maintenance/create/" class="btn btn-primary btn-sm">+ New Task</a>
+<a href="{% url 'maintenance:task-create' %}" class="btn btn-primary btn-sm">+ New Task</a>
 {% endif %}
 {% endblock %}
 
@@ -38,7 +38,7 @@
   </select>
 
   {% if selected_ship or selected_status or selected_priority %}
-  <a href="/maintenance/" class="btn btn-outline btn-sm">Clear</a>
+  <a href="{% url 'maintenance:task-list' %}" class="btn btn-outline btn-sm">Clear</a>
   {% endif %}
 </form>
 
@@ -97,7 +97,7 @@
             {% endif %}
           </td>
           <td>
-            <a href="/maintenance/{{ task.id }}/" class="btn btn-outline btn-sm">View</a>
+            <a href="{% url 'maintenance:task-detail' task.id %}" class="btn btn-outline btn-sm">View</a>
           </td>
         </tr>
         {% endfor %}

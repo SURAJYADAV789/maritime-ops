@@ -285,18 +285,16 @@
 
   <nav class="sidebar-nav">
     <div class="nav-label">Overview</div>
-    <a href="/dashboard/" class="nav-link {% block nav_dashboard %}{% endblock %}">
+    <a href="{% url 'compliance:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">
       📊 Dashboard
     </a>
-
-    <div class="nav-label">Management</div>
-    <a href="/ships/" class="nav-link {% block nav_ships %}{% endblock %}">
+    <a href="{% url 'ships:ship-list' %}" class="nav-link {% block nav_ships %}{% endblock %}">
       🚢 Fleet
     </a>
-    <a href="/maintenance/" class="nav-link {% block nav_maintenance %}{% endblock %}">
+    <a href="{% url 'maintenance:task-list' %}" class="nav-link {% block nav_maintenance %}{% endblock %}">
       🔧 Maintenance
     </a>
-    <a href="/drills/" class="nav-link {% block nav_drills %}{% endblock %}">
+    <a href="{% url 'drills:drill-list' %}" class="nav-link {% block nav_drills %}{% endblock %}">
       🚨 Safety Drills
     </a>
 
@@ -309,7 +307,7 @@
   <div class="sidebar-footer">
     <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
     <div class="user-role">{{ user.role|capfirst }}</div>
-    <a href="/auth/logout/" style="color:#ef4444; font-size:13px; text-decoration:none; margin-top:8px; display:block;">
+    <a href="{% url 'users:logout' %}" style="color:#ef4444;font-size:13px;text-decoration:none;margin-top:8px;display:block;">
       🚪 Logout
     </a>
   </div>

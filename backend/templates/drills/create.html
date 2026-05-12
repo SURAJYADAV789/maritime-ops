@@ -5,7 +5,7 @@
 {% block page_sub %}Plan a new safety drill for a ship{% endblock %}
 
 {% block topbar_actions %}
-<a href="/drills/" class="btn btn-outline btn-sm">← Cancel</a>
+<a href="{% url 'drills:drill-list' %}" class="btn btn-outline btn-sm">← Cancel</a>
 {% endblock %}
 
 {% block content %}

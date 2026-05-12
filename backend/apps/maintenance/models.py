@@ -51,9 +51,9 @@ class MaintenanceTask(models.Model):
 
 
 class TaskComment(models.Model):
-    task       = models.ForeignKey(MaintenanceTask, on_delete=models.CASCADE, related_name='comments')
-    author     = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
-    content    = models.TextField()
+    task = models.ForeignKey(MaintenanceTask, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

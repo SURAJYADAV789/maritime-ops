@@ -16,11 +16,11 @@ class Ship(models.Model):
     vessel_type = models.CharField(max_length=100)
     flag = models.CharField(max_length=100)
     port_of_registry = models.CharField(max_length=200)
-    gross_tonnage    = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    year_built       = models.PositiveIntegerField(null=True, blank=True)
-    status           = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
-    created_at       = models.DateTimeField(auto_now_add=True)
-    updated_at       = models.DateTimeField(auto_now=True)
+    gross_tonnage = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    year_built = models.PositiveIntegerField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'ships'

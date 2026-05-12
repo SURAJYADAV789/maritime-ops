@@ -5,7 +5,7 @@
 {% block page_sub %}{{ ship.vessel_type }} · {{ ship.flag }}{% endblock %}
 
 {% block topbar_actions %}
-<a href="/ships/" class="btn btn-outline btn-sm">← Back</a>
+<a href="{% url 'ships:ship-list' %}" class="btn btn-outline btn-sm">← Back</a>
 {% endblock %}
 
 {% block content %}
@@ -118,7 +118,7 @@
     <div class="card">
       <div class="card-title">
         Recent Tasks
-        <a href="/maintenance/?ship={{ ship.id }}"
+        <a href="{% url 'maintenance:task-list' %}?ship={{ ship.id }}"
            style="font-size:13px;color:#1e5799;font-weight:400;margin-left:8px;">
           View all →
         </a>
@@ -160,7 +160,7 @@
     <div class="card">
       <div class="card-title">
         Recent Drills
-        <a href="/drills/?ship={{ ship.id }}"
+        <a href="{% url 'drills:drill-list' %}?ship={{ ship.id }}"
            style="font-size:13px;color:#1e5799;font-weight:400;margin-left:8px;">
           View all →
         </a>

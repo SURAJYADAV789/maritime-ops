@@ -6,8 +6,8 @@
 
 {% block topbar_actions %}
 {% if user.is_admin %}
-<a href="/maintenance/create/" class="btn btn-primary btn-sm">+ Add Task</a>
-<a href="/drills/create/" class="btn btn-outline btn-sm">+ Schedule Drill</a>
+<a href="{% url 'maintenance:task-create' %}" class="btn btn-primary btn-sm">+ Add Task</a>
+<a href="{% url 'drills:drill-create' %}" class="btn btn-outline btn-sm">+ Schedule Drill</a>
 {% endif %}
 {% endblock %}
 
@@ -108,7 +108,7 @@
             {% endif %}
           </td>
           <td>
-            <a href="/ships/{{ ship.id }}/" class="btn btn-outline btn-sm">View</a>
+            <a href="{% url 'ships:ship-detail' ship.id %}" class="btn btn-outline btn-sm">View</a>
           </td>
         </tr>
         {% endfor %}

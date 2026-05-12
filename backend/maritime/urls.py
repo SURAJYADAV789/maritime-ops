@@ -21,10 +21,10 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
     path('admin/', admin.site.urls),
-    path('auth/', include('apps.users.urls')),
-    path('dashboard/', include('apps.compliance.urls')),
-    path('maintenance/', include('apps.maintenance.urls')),
-    path('drills/', include('apps.drills.urls')),
-    path('ships/', include('apps.ships.urls')),
+    path('auth/', include('apps.users.urls', namespace='users')),
+    path('dashboard/', include('apps.compliance.urls', namespace='compliance')),
+    path('maintenance/', include('apps.maintenance.urls', namespace='maintenance')),
+    path('drills/', include('apps.drills.urls', namespace='drills')),
+    path('ships/', include('apps.ships.urls', namespace='ships')),
     path('api/v1/', include('apps.api.urls')),
 ]

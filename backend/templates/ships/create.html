@@ -5,7 +5,7 @@
 {% block page_sub %}Add a new vessel to the fleet{% endblock %}
 
 {% block topbar_actions %}
-<a href="/ships/" class="btn btn-outline btn-sm">← Cancel</a>
+<a href="{% url 'ships:ship-list' %}" class="btn btn-outline btn-sm">← Cancel</a>
 {% endblock %}
 
 {% block content %}

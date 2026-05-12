@@ -6,7 +6,7 @@
 
 {% block topbar_actions %}
 {% if user.is_admin %}
-<a href="/ships/create/" class="btn btn-primary btn-sm">+ Register Ship</a>
+<a href="{% url 'ships:ship-create' %}" class="btn btn-primary btn-sm">+ Register Ship</a>
 {% endif %}
 {% endblock %}
 
@@ -48,7 +48,7 @@
             {% endif %}
           </td>
           <td>
-            <a href="/ships/{{ ship.id }}/" class="btn btn-outline btn-sm">View</a>
+            <a href="{% url 'ships:ship-detail' ship.id %}" class="btn btn-outline btn-sm">View</a>
           </td>
         </tr>
         {% endfor %}

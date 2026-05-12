@@ -5,7 +5,7 @@
 {% block page_sub %}Assign a new maintenance activity{% endblock %}
 
 {% block topbar_actions %}
-<a href="/maintenance/" class="btn btn-outline btn-sm">← Cancel</a>
+<a href="{% url 'maintenance:task-list' %}" class="btn btn-outline btn-sm">← Cancel</a>
 {% endblock %}
 
 {% block content %}
