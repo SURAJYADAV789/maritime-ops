@@ -84,7 +84,7 @@ def drill_detail(request, pk):
             drill.save()
             messages.success(request, "Drill cancelled.")
 
-        return redirect("drill-detail", pk=pk)
+        return redirect("drills:drill-detail", pk=pk)
 
     context = {
         "drill": drill,
@@ -98,7 +98,7 @@ def drill_detail(request, pk):
 def drill_create(request):
     if not request.user.is_admin:
         messages.error(request, "Only admins can schedule drills.")
-        return redirect("drill-list")
+        return redirect("drills:drill-list")
 
     if request.method == "POST":
         drill = SafetyDrill(
@@ -120,7 +120,7 @@ def drill_create(request):
         )
 
         messages.success(request, f'Drill "{drill.title}" scheduled.')
-        return redirect("drill-list")
+        return redirect("drills:drill-list")
 
     context = {
         "ships": Ship.objects.all(),

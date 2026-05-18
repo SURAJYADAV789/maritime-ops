@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from apps.ships.models import Ship
+from apps.users.models import User
 
 # Create your models here.
 
@@ -19,9 +21,9 @@ class MaintenanceTask(models.Model):
 
     title = models.CharField(max_length=300)
     description = models.TextField()
-    ship = models.ForeignKey('ships.ship', on_delete=models.CASCADE, related_name='maintenance_tasks')
-    assigned_to = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
-    created_by  = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, related_name='created_tasks')
+    ship = models.ForeignKey(Ship, on_delete=models.CASCADE, related_name='maintenance_tasks')
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
+    created_by  = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_tasks')
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     priority = models.CharField(max_length=10, choices=Priority.choices, default=Priority.MEDIUM)
     due_date = models.DateField()
@@ -52,7 +54,7 @@ class MaintenanceTask(models.Model):
 
 class TaskComment(models.Model):
     task = models.ForeignKey(MaintenanceTask, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

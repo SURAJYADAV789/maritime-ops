@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from apps.ships.models import Ship
 
 # Create your models here.
 
@@ -12,7 +13,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.CREW)
     employee_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True)
-    ship = models.ForeignKey('ships.Ship', on_delete=models.SET_NULL, null=True, blank=True, related_name='crew_members')
+    ship = models.ForeignKey(Ship, on_delete=models.SET_NULL, null=True, blank=True, related_name='crew_members')
 
     class Meta:
         db_table = 'users'

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}{{ task.title }} | MarineOPS{% endblock %}
+{% block nav_maintenance %}active{% endblock %}
+{% block page_title %}{{ task.title }}{% endblock %}
+{% block page_sub %}{{ task.ship.name }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'maintenance:task-list' %}" class="btn btn-outline btn-sm">← Back</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+
+  <!-- Task Info -->
+  <div>
+    <div class="card">
+      <div class="card-title">Task Details</div>
+      <table>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;width:120px;">Ship</td>
+          <td><strong>{{ task.ship.name }}</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Assigned To</td>
+          <td>{{ task.assigned_to.get_full_name|default:"Unassigned" }}</td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Priority</td>
+          <td>
+            {% if task.priority == 'critical' %}
+            <span class="badge badge-danger">Critical</span>
+            {% elif task.priority == 'high' %}
+            <span class="badge badge-warning">High</span>
+            {% elif task.priority == 'medium' %}
+            <span class="badge badge-info">Medium</span>
+            {% else %}
+            <span class="badge badge-gray">Low</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Due Date</td>
+          <td>
+            {% if task.is_overdue %}
+            <span style="color:#ef4444;font-weight:600;">⚠️ {{ task.due_date }}</span>
+            {% else %}
+            {{ task.due_date }}
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:8px 0;">Status</td>
+          <td>
+            {% if task.status == 'completed' %}
+            <span class="badge badge-success">✅ Completed</span>
+            {% elif task.status == 'overdue' %}
+            <span class="badge badge-danger">⚠️ Overdue</span>
+            {% elif task.status == 'in_progress' %}
+            <span class="badge badge-info">🔄 In Progress</span>
+            {% else %}
+            <span class="badge badge-gray">⏳ Pending</span>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+
+      <div style="margin-top:16px;">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px;">Description</div>
+        <p style="font-size:14px;color:#334155;">{{ task.description }}</p>
+      </div>
+    </div>
+
+    <!-- Update Status -->
+    {% if user.is_admin or task.assigned_to == user %}
+    <div class="card">
+      <div class="card-title">Update Status</div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_status">
+        <div class="form-group">
+          <select name="status" class="form-control">
+            {% for val, label in statuses %}
+            <option value="{{ val }}" {% if task.status == val %}selected{% endif %}>
+              {{ label }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Comments -->
+  <div>
+    <div class="card">
+      <div class="card-title">Comments & Notes</div>
+
+      {% for comment in comments %}
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <strong style="font-size:13px;">{{ comment.author.get_full_name|default:comment.author.username }}</strong>
+          <span style="font-size:12px;color:#64748b;">{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <p style="font-size:14px;color:#334155;">{{ comment.content }}</p>
+      </div>
+      {% empty %}
+      <p style="color:#64748b;font-size:14px;">No comments yet.</p>
+      {% endfor %}
+
+      <form method="post" style="margin-top:16px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_comment">
+        <div class="form-group">
+          <textarea name="content" class="form-control" rows="3"
+                    placeholder="Add a comment..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline">💬 Add Comment</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

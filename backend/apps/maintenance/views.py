@@ -63,7 +63,7 @@ def task_detail(request, pk):
                 )
                 messages.success(request, "Comment added.")
 
-        return redirect("task-detail", pk=pk)
+        return redirect("maintenance:task-detail", pk=task.pk)
 
     context = {
         "task": task,
@@ -77,7 +77,7 @@ def task_detail(request, pk):
 def task_create(request):
     if not request.user.is_admin:
         messages.error(request, "Only admins can create tasks.")
-        return redirect("task-list")
+        return redirect("maintenance:task-list")
 
     if request.method == "POST":
         task = MaintenanceTask(
@@ -92,7 +92,7 @@ def task_create(request):
         )
         task.save()
         messages.success(request, f'Task "{task.title}" created.')
-        return redirect("task-list")
+        return redirect("maintenance:task-detail", pk=task.pk)
 
     context = {
         "ships": Ship.objects.all(),

@@ -5,7 +5,7 @@ from django.contrib import messages
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('compliance:dashboard')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -13,7 +13,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return redirect('dashboard')
+            return redirect('compliance:dashboard')
         messages.error(request, 'Invalid username or password.')
 
     return render(request, 'auth/login.html')
@@ -21,4 +21,4 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('users:login')

@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from apps.ships.models import Ship
+from apps.users.models import User
 
 
 class SafetyDrill(models.Model):
@@ -24,11 +26,11 @@ class SafetyDrill(models.Model):
     title = models.CharField(max_length=300)
     drill_type = models.CharField(max_length=30, choices=DrillType.choices)
     description = models.TextField(blank=True)
-    ship = models.ForeignKey("ships.Ship", on_delete=models.CASCADE, related_name="safety_drills")
+    ship = models.ForeignKey(Ship, on_delete=models.CASCADE, related_name="safety_drills")
     scheduled_date = models.DateTimeField()
     duration_minutes = models.PositiveIntegerField(default=60)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SCHEDULED)
-    created_by = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True, related_name="created_drills")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="created_drills")
     completed_at = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -50,7 +52,7 @@ class SafetyDrill(models.Model):
 
 class DrillAttendance(models.Model):
     drill = models.ForeignKey(SafetyDrill, on_delete=models.CASCADE, related_name="attendances")
-    crew_member = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="drill_attendances")
+    crew_member = models.ForeignKey(User, on_delete=models.CASCADE, related_name="drill_attendances")
     attended = models.BooleanField(default=False)
     marked_at = models.DateTimeField(null=True, blank=True)
     completion_submitted = models.BooleanField(default=False)

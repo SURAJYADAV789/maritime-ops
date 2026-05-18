@@ -63,7 +63,7 @@ def ship_detail(request, pk):
 def ship_create(request):
     if not request.user.is_admin:
         messages.error(request, "Only admins can register ships.")
-        return redirect("ship-list")
+        return redirect('ships:ship-list')
 
     if request.method == "POST":
         ship = Ship(
@@ -77,6 +77,6 @@ def ship_create(request):
         )
         ship.save()
         messages.success(request, f'Ship "{ship.name}" registered.')
-        return redirect("ship-list")
+        return redirect('ships:ship-list')
 
     return render(request, "ships/create.html")
