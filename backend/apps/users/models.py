@@ -28,3 +28,10 @@ class User(AbstractUser):
     @property
     def is_crew(self):
         return self.role == self.Role.CREW
+    
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            self.role = self.Role.ADMIN
+        super().save(*args, **kwargs)
+
+    
